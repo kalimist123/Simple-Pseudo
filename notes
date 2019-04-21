@@ -1,0 +1,10 @@
+add this to the path before using pyinstaller
+
+C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x64
+
+pyinstaller --onefile --windowed dialog2.py
+
+pip install openpyxl
+pip install xlrd
+pip install pyinstaller
+pip install pandas

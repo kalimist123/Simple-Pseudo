@@ -103,10 +103,10 @@ class App(tk.Tk):
     def pseudonymize_file(self):
         self.logger.info('Starting Pseudo: ' + self._fileName.get())
 
-        t = threading.Thread(target=self.callback)
+        t = threading.Thread(target=self.pseudonymize_file_callback)
         t.start()
 
-    def callback(self):
+    def pseudonymize_file_callback(self):
         try:
             self.btn_pseudo['state'] = 'disabled'
             self.btn_file['state'] = 'disabled'

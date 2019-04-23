@@ -17,7 +17,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.resizable(False, False)
-        self.geometry("500x350")
+        self.geometry("500x250")
         self.title("Simple Pseudonymiser")
         self.welcomeLabel = tk.Label(self, text="Welcome to the Simple Pseudonymiser")
         self.welcomeLabel.pack(padx=60, pady=10)
@@ -45,15 +45,11 @@ class App(tk.Tk):
         self.btn_salt = ttk.Button(self, text="Choose a text file that contains your salt string", command=self.choose_salt_file, width=100)
 
         self.btn_salt.pack(padx=60, pady=10)
-        self.saltLabel = tk.Label(self, textvariable=self._saltOutput, justify="left",  width=100)
 
-        self.saltLabel.pack(padx=60, pady=10)
         self.btn_file = ttk.Button(self, text="Choose excel file with a column named 'identifier' to pseudo",
                                    command=self.choose_file, state="disabled", width = 100)
         self.btn_file.pack(padx=60, pady=10)
-        self.fileLabel = tk.Label(self, textvariable=self._inputFileName,justify="left", width=100)
 
-        self.fileLabel.pack(padx=60, pady=10)
         self.btn_pseudo = ttk.Button(self, text="Pseudonymise the file",
                                      command=self.pseudonymize_file, state="disabled", width=100)
         self.btn_pseudo.pack(padx=60, pady=10)
@@ -61,6 +57,9 @@ class App(tk.Tk):
         self.resultLabel = ttk.Label(self, textvariable=self._resultOutput, justify="center", width = 400)
         self.resultLabel.configure(style="foreGreen.Label")
         self.resultLabel.pack(padx=60, pady=10)
+
+
+
 
     def report_callback_exception(self, exc, val, tb):
         self.destroy_unmapped_children(self)

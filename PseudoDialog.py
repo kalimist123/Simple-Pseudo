@@ -57,9 +57,9 @@ class App(tk.Tk):
                                      command=self.pseudonymize_file, state="disabled", width=100)
         self.btn_pseudo.pack(padx=60, pady=10)
 
-        self.resultLabel = ttk.Label(self, textvariable=self._resultOutput, justify="center",
-                                     width = 400, wraplength=400, font=('Helvetica', 9, 'bold'))
-        self.resultLabel.configure(style="foreGreen.Label")
+        self.resultLabel = ttk.Label(self, textvariable=self._resultOutput,
+                                     width = 400, wraplength=390, font=('Helvetica', 9, 'bold'))
+        self.resultLabel.configure(style="foreGreen.Label",anchor="center")
         self.resultLabel.pack(padx=60, pady=10)
 
 

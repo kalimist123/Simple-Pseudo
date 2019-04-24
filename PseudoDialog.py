@@ -32,17 +32,20 @@ class App(tk.Tk):
         style = ttk.Style()
         style.configure("foreGreen.Label", foreground="green")
         style.configure("foreRed.Label", foreground="red")
-        style.configure("foreOrange.Label", foreground="orange")
+        style.configure("foreOrange.Label", foreground="coral4")
 
         self._fileName = tk.StringVar()
         self._result = tk.StringVar()
         self._salt = tk.StringVar()
         self._saltOutput = tk.StringVar()
+        self._pseudoOutput =tk.StringVar()
 
         self._inputFileName = tk.StringVar()
         self._resultOutput = tk.StringVar()
 
-        self.btn_salt = ttk.Button(self, text="Choose a text file that contains your salt string", command=self.choose_salt_file, width=100)
+        self._pseudoOutput.set("Pseudonymise the file")
+        self.btn_salt = ttk.Button(self, text="Choose a text file that contains your salt string",
+                                   command=self.choose_salt_file, width=100)
 
         self.btn_salt.pack(padx=60, pady=10)
 
@@ -50,11 +53,12 @@ class App(tk.Tk):
                                    command=self.choose_file, state="disabled", width = 100)
         self.btn_file.pack(padx=60, pady=10)
 
-        self.btn_pseudo = ttk.Button(self, text="Pseudonymise the file",
+        self.btn_pseudo = ttk.Button(self, textvariable=self._pseudoOutput,
                                      command=self.pseudonymize_file, state="disabled", width=100)
         self.btn_pseudo.pack(padx=60, pady=10)
 
-        self.resultLabel = ttk.Label(self, textvariable=self._resultOutput, justify="center", width = 400)
+        self.resultLabel = ttk.Label(self, textvariable=self._resultOutput, justify="center",
+                                     width = 400, wraplength=400, font=('Helvetica', 9, 'bold'))
         self.resultLabel.configure(style="foreGreen.Label")
         self.resultLabel.pack(padx=60, pady=10)
 
@@ -94,6 +98,7 @@ class App(tk.Tk):
         self.btn_pseudo['state'] = 'normal'
         self._resultOutput.set("")
         self.logger.info('Data File Loaded '+self._fileName.get())
+        self._pseudoOutput.set("Pseudonymise the file "+os.path.basename(self._fileName.get()))
 
     def pseudo(self, x):
         sentence = str(x) + self._salt.get()

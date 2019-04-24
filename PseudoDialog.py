@@ -115,7 +115,7 @@ class App(tk.Tk):
             self._resultOutput.set(os.path.basename(temp_name) + " is being loaded")
             self.update()
 
-            df = pd.read_excel(self._fileName.get(), dtype='category')
+            df = pd.read_excel(self._fileName.get(), dtype='str')
             if 'identifier' not in df.columns:
                 self.resultLabel.config(style="foreRed.Label")
                 self._resultOutput.set("No 'identifier' column exists in file that you have selected!")

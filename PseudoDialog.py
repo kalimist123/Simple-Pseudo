@@ -82,23 +82,32 @@ class App(tk.Tk):
                 self.destroy_unmapped_children(child)
 
     def choose_salt_file(self):
+        self.btn_file['state'] = 'disabled'
+        self._salt.set("")
         file_types = (("Text File", "*.txt"),)
-        self._salt.set(fd.askopenfilename(title="Open salt file", filetypes=file_types))
-
-        with open(self._salt.get()) as f:
-            self._salt.set(f.readline())
-        self._saltOutput.set("Your salt term is " + self._salt.get()[4:].rjust(len(self._salt.get()), "*"))
-        self.btn_file['state'] = 'normal'
-        self.logger.info('Salt Loaded')
+        filepath = fd.askopenfilename(title="Open salt file", filetypes=file_types)
+        exists = os.path.isfile(filepath)
+        if exists:
+            self._salt.set(filepath)
+            with open(self._salt.get()) as f:
+                self._salt.set(f.readline())
+            self._saltOutput.set("Your salt term is " + self._salt.get()[4:].rjust(len(self._salt.get()), "*"))
+            self.btn_file['state'] = 'normal'
+            self.logger.info('Salt Loaded')
 
     def choose_file(self):
+        self.btn_pseudo['state'] = 'disabled'
+        self._fileName.set("")
         file_types = (("xlsx", "*.xlsx"),("All files", "*"))
-        self._fileName.set(fd.askopenfilename(title="Open file", filetypes=file_types))
-        self._inputFileName.set(os.path.basename(self._fileName.get()))
-        self.btn_pseudo['state'] = 'normal'
-        self._resultOutput.set("")
-        self.logger.info('Data File Loaded '+self._fileName.get())
-        self._pseudoOutput.set("Pseudonymise the file "+os.path.basename(self._fileName.get()))
+        filepath = fd.askopenfilename(title="Open file", filetypes=file_types)
+        exists = os.path.isfile(filepath)
+        if exists:
+            self._fileName.set(filepath)
+            self._inputFileName.set(os.path.basename(self._fileName.get()))
+            self.btn_pseudo['state'] = 'normal'
+            self._resultOutput.set("")
+            self.logger.info('Data File Loaded '+self._fileName.get())
+            self._pseudoOutput.set("Pseudonymise the file "+os.path.basename(self._fileName.get()))
 
     def pseudo(self, x):
         sentence = str(x) + self._salt.get()

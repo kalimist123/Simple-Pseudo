@@ -9,6 +9,7 @@ import os
 import pandas.io.formats.excel
 import logging
 from logging.handlers import RotatingFileHandler
+import pem
 pandas.io.formats.excel.header_style = None
 
 
@@ -44,8 +45,8 @@ class App(tk.Tk):
         self._resultOutput = tk.StringVar()
 
         self._pseudoOutput.set("Pseudonymise the file")
-        self.btn_salt = ttk.Button(self, text="Choose a text file that contains your salt string",
-                                   command=self.choose_salt_file, width=100)
+        self.btn_salt = ttk.Button(self, text="Choose a pem or cert file to generate a key",
+                                   command=self.choose_pem_file, width=100)
 
         self.btn_salt.pack(padx=60, pady=10)
 
@@ -85,12 +86,26 @@ class App(tk.Tk):
         self.btn_file['state'] = 'disabled'
         self._salt.set("")
         file_types = (("Text File", "*.txt"),)
-        filepath = fd.askopenfilename(title="Open salt file", filetypes=file_types)
+        filepath = fd.askopenfilename(title="Open PEM file", filetypes=file_types)
         exists = os.path.isfile(filepath)
         if exists:
             self._salt.set(filepath)
             with open(self._salt.get()) as f:
                 self._salt.set(f.readline())
+            self._saltOutput.set("Your salt term is " + self._salt.get()[4:].rjust(len(self._salt.get()), "*"))
+            self.btn_file['state'] = 'normal'
+            self.logger.info('Salt Loaded')
+
+    def choose_pem_file(self):
+        self.btn_file['state'] = 'disabled'
+        self._salt.set("")
+        file_types = (("pem file", "*.pem"),("cert file", "*.cert"))
+        filepath = fd.askopenfilename(title="Open pem or cert file", filetypes=file_types)
+        exists = os.path.isfile(filepath)
+        if exists:
+            certs = pem.parse_file(filepath)
+            self._salt.set(filepath)
+            self._salt.set(certs[0].sha1_hexdigest)
             self._saltOutput.set("Your salt term is " + self._salt.get()[4:].rjust(len(self._salt.get()), "*"))
             self.btn_file['state'] = 'normal'
             self.logger.info('Salt Loaded')

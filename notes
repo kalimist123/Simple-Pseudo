@@ -4,10 +4,4 @@ C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x64
 
 pyinstaller --onefile --windowed PseudoDialog.py
 
-pip install openpyxl
-pip install xlrd
-pip install pyinstaller
-pip install pandas
-pip install pem
-
 You can generate your own .cert file here http://www.selfsignedcertificate.com

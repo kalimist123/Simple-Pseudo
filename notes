@@ -9,3 +9,5 @@ pip install xlrd
 pip install pyinstaller
 pip install pandas
 pip install pem
+
+You can generate your own .cert file here http://www.selfsignedcertificate.com

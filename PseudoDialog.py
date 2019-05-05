@@ -65,11 +65,6 @@ class App(tk.Tk):
 
         self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=400)
 
-
-
-
-
-
     def report_callback_exception(self, exc, val, tb):
         self.destroy_unmapped_children(self)
         self.logger.error('Error!', val)
@@ -117,7 +112,7 @@ class App(tk.Tk):
     def choose_file(self):
         self.btn_pseudo['state'] = 'disabled'
         self._fileName.set("")
-        file_types = (("xlsx", "*.xlsx"),("All files", "*"))
+        file_types = (("xlsx", "*.xlsx"),)
         filepath = fd.askopenfilename(title="Open file", filetypes=file_types)
         exists = os.path.isfile(filepath)
         if exists:
@@ -188,7 +183,7 @@ class App(tk.Tk):
 
         except BaseException as error:
             self.resultLabel.config(style="foreRed.Label")
-            self._resultOutput.set('An exception occurred: {}'.format(error))
+            self._resultOutput.set('An exception occurred: details in log file')
             self.btn_pseudo['state'] = 'normal'
             self.btn_file['state'] = 'normal'
             self.btn_salt['state'] = 'normal'

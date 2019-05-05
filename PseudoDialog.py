@@ -63,6 +63,10 @@ class App(tk.Tk):
         self.resultLabel.configure(style="foreGreen.Label",anchor="center")
         self.resultLabel.pack(padx=60, pady=10)
 
+        self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=400)
+
+
+
 
 
 
@@ -130,9 +134,14 @@ class App(tk.Tk):
 
     def pseudonymize_file(self):
         self.logger.info('Starting Pseudo: ' + self._fileName.get())
-
+        self.processing_bar.pack(padx=60, pady=10)
+        self.processing_bar.start(interval=10)
         t = threading.Thread(target=self.pseudonymize_file_callback)
         t.start()
+
+    def kill_progress(self):
+        self.processing_bar.stop()
+        self.processing_bar.pack_forget()
 
     def pseudonymize_file_callback(self):
         try:
@@ -147,17 +156,18 @@ class App(tk.Tk):
             df = pd.read_excel(self._fileName.get(), dtype='str', encoding='utf-8')
             if 'identifier' not in df.columns:
                 self.resultLabel.config(style="foreRed.Label")
-                self._resultOutput.set("No 'identifier' column exists in file that you have selected!")
+                self._resultOutput.set("No 'identifier' column exists in file!")
                 self.btn_pseudo['state'] = 'normal'
                 self.btn_file['state'] = 'normal'
                 self.btn_salt['state'] = 'normal'
+                self.kill_progress()
 
             else:
                 temp_name = str(self._fileName.get())
                 temp_name = temp_name.replace(".xlsx", "_psuedo.xlsx")
                 self.btn_pseudo['state'] = 'disabled'
                 self.resultLabel.config(style="foreOrange.Label")
-                self._resultOutput.set("'identifier' column in " + os.path.basename(temp_name) + " is being pseudonymised")
+                self._resultOutput.set(os.path.basename(temp_name) + " is being pseudonymised")
                 self.config(cursor="wait")
                 self.update()
 
@@ -167,13 +177,15 @@ class App(tk.Tk):
                 if os.path.exists(temp_name):
                     os.remove(temp_name)
                 df.to_excel(temp_name, index=False)
-                self._resultOutput.set("'identifier' column in " + os.path.basename(temp_name) + " has been pseudonymised")
+                self._resultOutput.set(os.path.basename(temp_name) + " has been pseudonymised")
                 self.resultLabel.config(style="foreGreen.Label")
                 self.btn_pseudo['state'] = 'disabled'
                 self.btn_file['state'] = 'normal'
                 self.btn_salt['state'] = 'normal'
                 self.config(cursor="")
-                self.logger.info('Completing Pseudo: ' + self._fileName.get())
+                self.logger.info('Completing Pseudo: ' + os.path.basename(temp_name))
+                self.kill_progress()
+
         except BaseException as error:
             self.resultLabel.config(style="foreRed.Label")
             self._resultOutput.set('An exception occurred: {}'.format(error))
@@ -181,6 +193,7 @@ class App(tk.Tk):
             self.btn_file['state'] = 'normal'
             self.btn_salt['state'] = 'normal'
             self.logger.error('An exception occurred: {}'.format(error))
+            self.kill_progress()
 
 
 if __name__ == "__main__":

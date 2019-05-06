@@ -34,6 +34,9 @@ class App(tk.Tk):
         style.configure("foreGreen.Label", foreground="green")
         style.configure("foreRed.Label", foreground="red")
         style.configure("foreOrange.Label", foreground="coral4")
+        style.configure("button.flat", relief="flat")
+
+       # style.configure("TButton", relief="flat")
 
         self._fileName = tk.StringVar()
         self._result = tk.StringVar()
@@ -45,12 +48,12 @@ class App(tk.Tk):
         self._resultOutput = tk.StringVar()
 
         self._pseudoOutput.set("Pseudonymise the file")
-        self.btn_salt = ttk.Button(self, text="Choose a pem or cert file to generate a key",
+        self.btn_salt = ttk.Button(self, text="Choose a cert/pem file to generate your salt",
                                    command=self.choose_pem_file, width=100)
 
         self.btn_salt.pack(padx=60, pady=10)
 
-        self.btn_file = ttk.Button(self, text="Choose excel file with a column named 'identifier' to pseudo",
+        self.btn_file = ttk.Button(self, text="Choose excel file with 'identifier' column",
                                    command=self.choose_file, state="disabled", width = 100)
         self.btn_file.pack(padx=60, pady=10)
 
@@ -63,7 +66,7 @@ class App(tk.Tk):
         self.resultLabel.configure(style="foreGreen.Label",anchor="center")
         self.resultLabel.pack(padx=60, pady=10)
 
-        self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=400)
+        self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=300)
 
     def report_callback_exception(self, exc, val, tb):
         self.destroy_unmapped_children(self)

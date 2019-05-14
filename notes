@@ -6,6 +6,12 @@ pyinstaller --onefile --windowed PseudoDialog.py
 
 You can generate your own .cert file here http://www.selfsignedcertificate.com
 
-Or to export a PEM file from an existing pfx cert you can use openssl
+Or create your own using openssl
+
+For cert: openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out MyCertificate.crt -keyout MyKey.key
+For pem: openssl genrsa -out mypem.pem -des3  4096
+
+
+Or export a PEM file from an existing pfx cert using openssl
 
 openssl pkcs12 -in mycert.pfx -out mycert.pem -clcerts

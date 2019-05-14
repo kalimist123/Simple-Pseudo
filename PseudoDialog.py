@@ -36,8 +36,6 @@ class App(tk.Tk):
         style.configure("foreOrange.Label", foreground="coral4")
         style.configure("button.flat", relief="flat")
 
-       # style.configure("TButton", relief="flat")
-
         self._fileName = tk.StringVar()
         self._result = tk.StringVar()
         self._salt = tk.StringVar()
@@ -66,7 +64,7 @@ class App(tk.Tk):
         self.resultLabel.configure(style="foreGreen.Label",anchor="center")
         self.resultLabel.pack(padx=60, pady=10)
 
-        self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=300)
+        self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='determinate', length=300)
 
     def report_callback_exception(self, exc, val, tb):
         self.destroy_unmapped_children(self)
@@ -133,7 +131,7 @@ class App(tk.Tk):
     def pseudonymize_file(self):
         self.logger.info('Starting Pseudo: ' + self._fileName.get())
         self.processing_bar.pack(padx=60, pady=10)
-        self.processing_bar.start(interval=10)
+        self.processing_bar.start(1000)
         t = threading.Thread(target=self.pseudonymize_file_callback)
         t.start()
 

@@ -99,7 +99,7 @@ class App(tk.Tk):
     def choose_pem_file(self):
         self.btn_file['state'] = 'disabled'
         self._salt.set("")
-        file_types = (("pem file", "*.pem"),("cert file", "*.cert"))
+        file_types = (("pem file", "*.pem"),("cert file", "*.cert"),("crt file", "*.crt"))
         filepath = fd.askopenfilename(title="Open pem or cert file", filetypes=file_types)
         exists = os.path.isfile(filepath)
         if exists:

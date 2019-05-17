@@ -4,9 +4,6 @@ pip install pem
 pip install xlrd
 pip install openpyxl
 
-When generating installer on windows you need to add this to the path before using pyinstaller
-
-C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x64
 
 pyinstaller --onefile --windowed PseudoDialog.py
 

@@ -150,6 +150,7 @@ class App(tk.Tk):
             self.update()
 
             df = pd.read_excel(self._fileName.get(), dtype='str', encoding='utf-8')
+            df.columns = df.columns.str.lower()
             if 'identifier' not in df.columns:
                 self.resultLabel.config(style="foreRed.Label")
                 self._resultOutput.set("No 'identifier' column exists in file!")

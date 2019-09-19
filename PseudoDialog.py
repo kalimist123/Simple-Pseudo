@@ -67,8 +67,9 @@ class App(tk.Tk):
         self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='determinate', length=300)
 
     def report_callback_exception(self, exc, val, tb):
-        self.destroy_unmapped_children(self)
         self.logger.error('Error!', val)
+        self.destroy_unmapped_children(self)
+
 
     def destroy_unmapped_children(self, parent):
         """
@@ -122,7 +123,10 @@ class App(tk.Tk):
             self.btn_pseudo['state'] = 'normal'
             self._resultOutput.set("")
             self.logger.info('Data File Loaded '+self._fileName.get())
-            self._pseudoOutput.set("Pseudonymise the file "+os.path.basename(self._fileName.get()))
+
+            temp_name = self.get_file_display_name(self._fileName.get())
+
+            self._pseudoOutput.set("Pseudonymise the file "+temp_name)
 
     def pseudo(self, x):
         sentence = str(x) + self._salt.get()
@@ -139,14 +143,23 @@ class App(tk.Tk):
         self.processing_bar.stop()
         self.processing_bar.pack_forget()
 
+    def get_extension(self, filename):
+        filename, file_extension = os.path.splitext(filename)
+        return file_extension if file_extension else None
+
+    def get_file_display_name(self, filename):
+        temp_name = os.path.basename(filename);
+        return temp_name[:15] + ('..' + self.get_extension(temp_name) if len(temp_name) > 15 else '')
+
     def pseudonymize_file_callback(self):
         try:
             self.btn_pseudo['state'] = 'disabled'
             self.btn_file['state'] = 'disabled'
             self.btn_salt['state'] = 'disabled'
-            temp_name = str(self._fileName.get())
+            temp_name = self.get_file_display_name(self._fileName.get())
+
             self.resultLabel.config(style="foreOrange.Label")
-            self._resultOutput.set(os.path.basename(temp_name) + " is being loaded")
+            self._resultOutput.set(temp_name + " is being loaded")
             self.update()
 
             df = pd.read_excel(self._fileName.get(), dtype='str', encoding='utf-8')
@@ -162,25 +175,27 @@ class App(tk.Tk):
             else:
                 temp_name = str(self._fileName.get())
                 temp_name = temp_name.replace(".xlsx", "_psuedo.xlsx")
+                new_name = temp_name
                 self.btn_pseudo['state'] = 'disabled'
                 self.resultLabel.config(style="foreOrange.Label")
-                self._resultOutput.set(os.path.basename(temp_name) + " is being pseudonymised")
+                temp_name = self.get_file_display_name(self._fileName.get())
+                self._resultOutput.set(temp_name + " is being pseudonymised")
                 self.config(cursor="wait")
                 self.update()
 
                 df['DIGEST'] = df.identifier.apply(self.pseudo)
                 del df['identifier']
                 self._result.set(os.path.basename(temp_name))
-                if os.path.exists(temp_name):
-                    os.remove(temp_name)
-                df.to_excel(temp_name, index=False)
-                self._resultOutput.set(os.path.basename(temp_name) + " has been pseudonymised")
+                if os.path.exists(new_name):
+                    os.remove(new_name)
+                df.to_excel(new_name, index=False)
+                self._resultOutput.set(os.path.basename(str(self._fileName.get())) + " has been pseudonymised")
                 self.resultLabel.config(style="foreGreen.Label")
                 self.btn_pseudo['state'] = 'disabled'
                 self.btn_file['state'] = 'normal'
                 self.btn_salt['state'] = 'normal'
                 self.config(cursor="")
-                self.logger.info('Completing Pseudo: ' + os.path.basename(temp_name))
+                self.logger.info('Completing Pseudo: ' + self._fileName.get())
                 self.kill_progress()
 
         except BaseException as error:

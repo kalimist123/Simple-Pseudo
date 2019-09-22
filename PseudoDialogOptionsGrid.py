@@ -19,7 +19,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.resizable(False, False)
-        self.geometry("500x380")
+        self.geometry("500x320")
         self.title("Simple Pseudonymiser")
         self.welcomeLabel = tk.Label(self, text="Welcome to the Simple Pseudonymiser")
         self.welcomeLabel.pack(padx=60, pady=10)
@@ -57,12 +57,13 @@ class App(tk.Tk):
         self.btn_file.pack(padx=60, pady=10)
 
         self.menu_label_text = tk.StringVar()
-        self.menu_label_text.set("Please select the excel column that you want to pseudonymise")
+        self.menu_label_text.set("select from the list the excel column that you want to pseudonymise ")
         self.menu_label = tk.Label(self, textvariable=self.menu_label_text)
         self.options = ['']
         self.om_variable = tk.StringVar(self)
         self.om = ttk.OptionMenu(self, self.om_variable, *self.options)
         self.om.configure(width=60)
+        self.alwaysActiveStyle(self.om)
 
         self.om['state'] = 'disabled'
         self.om_variable.trace("w", self.OptionMenu_SelectionEvent)
@@ -73,7 +74,7 @@ class App(tk.Tk):
         self.resultLabel = ttk.Label(self, textvariable=self._resultOutput,
                                      width = 400, wraplength=390, font=('Helvetica', 9, 'bold'))
         self.resultLabel.configure(style="foreGreen.Label",anchor="center")
-        self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='determinate', length=350)
+        self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='determinate', length=400)
 
     def report_callback_exception(self, exc, val, tb):
         self.logger.error('Error!', val)
@@ -88,9 +89,9 @@ class App(tk.Tk):
 
 
     def show_pickers(self):
-        self.alwaysActiveStyle(self.om)
-        self.menu_label.pack(padx=60, pady=10)
+        self.menu_label.pack(padx=60, pady=0)
         self.om.pack(padx=60, pady=10)
+        self.alwaysActiveStyle(self.om)
         self.btn_pseudo.pack(padx=60, pady=10)
 
 
@@ -153,18 +154,14 @@ class App(tk.Tk):
         exists = os.path.isfile(filepath)
         self.hide_pickers()
         if exists:
-            self.show_pickers()
-            if not self.resultLabel.winfo_ismapped():
-                self.resultLabel.pack(padx=60, pady=10)
+            self.btn_salt['state'] = 'disabled'
+            self.btn_file['state'] = 'disabled'
+
             self._fileName.set(filepath)
             self._inputFileName.set(os.path.basename(self._fileName.get()))
             self.btn_pseudo['state'] = 'normal'
             self._resultOutput.set("")
             self.logger.info('Data File Loaded '+self._fileName.get())
-
-            temp_name = self.get_file_display_name(self._fileName.get())
-
-            # self._pseudoOutput.set("Pseudonymise the column "+self.om_variable.get())
             first_row = pd.read_excel(self._fileName.get(), dtype='str', encoding='utf-8', nrows=1)
             first_row.columns = first_row.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')','')
 
@@ -173,6 +170,11 @@ class App(tk.Tk):
             self.om['state'] = 'normal'
             self.om_variable.set(self.options[0])
             self._pseudoOutput.set("Pseudonymise the column " + self.om_variable.get())
+            self.show_pickers()
+            if not self.resultLabel.winfo_ismapped():
+                self.resultLabel.pack(padx=60, pady=10)
+            self.btn_salt['state'] = 'normal'
+            self.btn_file['state'] = 'normal'
 
 
     def update_option_menu(self):

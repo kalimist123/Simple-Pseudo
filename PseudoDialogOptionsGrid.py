@@ -57,7 +57,7 @@ class App(tk.Tk):
         self.btn_file.pack(padx=60, pady=10)
 
         self.menu_label_text = tk.StringVar()
-        self.menu_label_text.set("select from the list the excel column that you want to pseudonymise ")
+        self.menu_label_text.set("Choose the excel column that you would like to have pseudonymised")
         self.menu_label = tk.Label(self, textvariable=self.menu_label_text)
         self.options = ['']
         self.om_variable = tk.StringVar(self)
@@ -171,8 +171,6 @@ class App(tk.Tk):
             self.om_variable.set(self.options[0])
             self._pseudoOutput.set("Pseudonymise the column " + self.om_variable.get())
             self.show_pickers()
-            if not self.resultLabel.winfo_ismapped():
-                self.resultLabel.pack(padx=60, pady=10)
             self.btn_salt['state'] = 'normal'
             self.btn_file['state'] = 'normal'
 
@@ -198,6 +196,8 @@ class App(tk.Tk):
     def pseudonymize_file(self):
         self.logger.info('Starting Pseudo: ' + self._fileName.get())
         self.processing_bar.pack(padx=60, pady=10)
+        if not self.resultLabel.winfo_ismapped():
+            self.resultLabel.pack(padx=60, pady=10)
         self.processing_bar.start(1000)
         t = threading.Thread(target=self.pseudonymize_file_callback)
         t.start()

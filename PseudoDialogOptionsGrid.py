@@ -10,7 +10,8 @@ import pandas.io.formats.excel
 import logging
 from logging.handlers import RotatingFileHandler
 import pem
-from functools import partial
+import gc
+
 pandas.io.formats.excel.header_style = None
 
 
@@ -173,6 +174,8 @@ class App(tk.Tk):
             self.show_pickers()
             self.btn_salt['state'] = 'normal'
             self.btn_file['state'] = 'normal'
+            del first_row
+            gc.collect()
 
 
     def update_option_menu(self):
@@ -257,6 +260,8 @@ class App(tk.Tk):
             if os.path.exists(new_name):
                 os.remove(new_name)
             df.to_excel(new_name, index=False)
+            del df
+            gc.collect()
             self._resultOutput.set(str(self._fileName.get()) + " has been pseudonymised")
             self.resultLabel.config(style="foreGreen.Label")
             self.btn_pseudo['state'] = 'disabled'

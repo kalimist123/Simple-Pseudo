@@ -11,6 +11,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import pem
 import gc
+import sys
 
 pandas.io.formats.excel.header_style = None
 
@@ -78,7 +79,8 @@ class App(tk.Tk):
         self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='determinate', length=400)
 
     def report_callback_exception(self, exc, val, tb):
-        self.logger.error('Error!', val)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        self.logger.error('exception line: ' + str(exc_traceback.tb_lineno) + ' error: ' + str(exc_value))
         self.destroy_unmapped_children(self)
         self.btn_pseudo.pack(padx=60, pady=10)
 
@@ -190,8 +192,6 @@ class App(tk.Tk):
         pass
 
 
-
-
     def pseudo(self, x):
         sentence = str(x) + self._salt.get()
         return str(hashlib.blake2s(sentence.encode('utf-8')).hexdigest())
@@ -230,16 +230,7 @@ class App(tk.Tk):
 
             df = pd.read_excel(self._fileName.get(), dtype='str', encoding='utf-8')
             df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
-            #df.columns = df.columns.str.lower()
-            #if 'identifier' not in df.columns:
-            #    self.resultLabel.config(style="foreRed.Label")
-            #    self._resultOutput.set("No 'identifier' column exists in file!")
-            #    self.btn_pseudo['state'] = 'normal'
-            #    self.btn_file['state'] = 'normal'
-            #    self.btn_salt['state'] = 'normal'
-            #    self.kill_progress()
 
-            #else:
             temp_name = str(self._fileName.get())
             temp_name = temp_name.replace(".xlsx", "_psuedo.xlsx")
             new_name = temp_name
@@ -249,9 +240,6 @@ class App(tk.Tk):
             self._resultOutput.set(temp_name + " is being pseudonymised")
             self.config(cursor="wait")
             self.update()
-
-            #df['DIGEST'] = df.identifier.apply(self.pseudo)
-            #del df['identifier']
 
             df['DIGEST'] = df[self.om_variable.get()].apply(self.pseudo)
             del df[self.om_variable.get()]
@@ -273,12 +261,14 @@ class App(tk.Tk):
             self.hide_pickers()
 
         except BaseException as error:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
             self.resultLabel.config(style="foreRed.Label")
             self._resultOutput.set('An exception occurred: details in log file')
             self.btn_pseudo['state'] = 'normal'
             self.btn_file['state'] = 'normal'
             self.btn_salt['state'] = 'normal'
             self.logger.error('An exception occurred: {}'.format(error))
+            self.logger.error('exception line: ' + str(exc_traceback.tb_lineno) + ' error: ' + str(exc_value))
             self.kill_progress()
             self.hide_pickers()
 

@@ -1,4 +1,3 @@
-
 from tkinter import ttk
 import tkinter as tk
 import tkinter.filedialog as fd
@@ -27,7 +26,7 @@ class App(tk.Tk):
         self.welcomeLabel.pack(padx=60, pady=10)
 
         self.logger = logging.getLogger()
-        handler = RotatingFileHandler("pseudo_log.log", maxBytes=10*1024*1024, backupCount=5)
+        handler = RotatingFileHandler("pseudo_log.log", maxBytes=10 * 1024 * 1024, backupCount=5)
         formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
@@ -43,7 +42,7 @@ class App(tk.Tk):
         self._result = tk.StringVar()
         self._salt = tk.StringVar()
         self._saltOutput = tk.StringVar()
-        self._pseudoOutput =tk.StringVar()
+        self._pseudoOutput = tk.StringVar()
 
         self._inputFileName = tk.StringVar()
         self._resultOutput = tk.StringVar()
@@ -55,7 +54,7 @@ class App(tk.Tk):
         self.btn_salt.pack(padx=60, pady=10)
 
         self.btn_file = ttk.Button(self, text="Choose excel file and the select column to pseudo",
-                                   command=self.choose_file, state="disabled", width = 100)
+                                   command=self.choose_file, state="disabled", width=100)
         self.btn_file.pack(padx=60, pady=10)
 
         self.menu_label_text = tk.StringVar()
@@ -68,14 +67,14 @@ class App(tk.Tk):
         self.alwaysActiveStyle(self.om)
 
         self.om['state'] = 'disabled'
-        self.om_variable.trace("w", self.OptionMenu_SelectionEvent)
+        self.om_variable.trace("w", self.option_menu_selection_event)
 
         self.btn_pseudo = ttk.Button(self, textvariable=self._pseudoOutput,
                                      command=self.pseudonymize_file, state="disabled", width=100)
 
         self.resultLabel = ttk.Label(self, textvariable=self._resultOutput,
-                                     width = 400, wraplength=390, font=('Helvetica', 9, 'bold'))
-        self.resultLabel.configure(style="foreGreen.Label",anchor="center")
+                                     width=400, wraplength=390, font=('Helvetica', 9, 'bold'))
+        self.resultLabel.configure(style="foreGreen.Label", anchor="center")
         self.processing_bar = ttk.Progressbar(self, orient='horizontal', mode='determinate', length=400)
 
     def report_callback_exception(self, exc, val, tb):
@@ -88,22 +87,16 @@ class App(tk.Tk):
         widget.config(state="active")
         widget.bind("<Leave>", lambda e: "break")
 
-
-
-
     def show_pickers(self):
         self.menu_label.pack(padx=60, pady=0)
         self.om.pack(padx=60, pady=10)
         self.alwaysActiveStyle(self.om)
         self.btn_pseudo.pack(padx=60, pady=10)
 
-
-
     def hide_pickers(self):
         self.menu_label.pack_forget()
         self.om.pack_forget()
         self.btn_pseudo.pack_forget()
-
 
     def destroy_unmapped_children(self, parent):
         """
@@ -136,7 +129,7 @@ class App(tk.Tk):
             self.resultLabel.pack_forget()
         self.btn_file['state'] = 'disabled'
         self._salt.set("")
-        file_types = (("pem file", "*.pem"),("cert file", "*.cert"),("crt file", "*.crt"))
+        file_types = (("crt file", "*.crt"), ("cert file", "*.cert"), ("pem file", "*.pem"))
         filepath = fd.askopenfilename(title="Open pem or cert file", filetypes=file_types)
         exists = os.path.isfile(filepath)
         if exists:
@@ -164,9 +157,11 @@ class App(tk.Tk):
             self._inputFileName.set(os.path.basename(self._fileName.get()))
             self.btn_pseudo['state'] = 'normal'
             self._resultOutput.set("")
-            self.logger.info('Data File Loaded '+self._fileName.get())
+            self.logger.info('Data File Loaded ' + self._fileName.get())
             first_row = pd.read_excel(self._fileName.get(), dtype='str', encoding='utf-8', nrows=1)
-            first_row.columns = first_row.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')','')
+            first_row.columns = first_row.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(',
+                                                                                                            '').str.replace(
+                ')', '')
 
             self.options = list(first_row)
             self.update_option_menu()
@@ -179,7 +174,6 @@ class App(tk.Tk):
             del first_row
             gc.collect()
 
-
     def update_option_menu(self):
         menu = self.om["menu"]
         menu.delete(0, "end")
@@ -187,10 +181,9 @@ class App(tk.Tk):
             menu.add_command(label=string,
                              command=lambda value=string: self.om_variable.set(value))
 
-    def OptionMenu_SelectionEvent(self, *args):
+    def option_menu_selection_event(self, *args):
         self._pseudoOutput.set("Pseudonymise the column " + self.om_variable.get())
         pass
-
 
     def pseudo(self, x):
         sentence = str(x) + self._salt.get()
@@ -229,7 +222,8 @@ class App(tk.Tk):
             self.update()
 
             df = pd.read_excel(self._fileName.get(), dtype='str', encoding='utf-8')
-            df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
+            df.columns = df.columns.str.strip().str.lower()\
+                .str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
 
             temp_name = str(self._fileName.get())
             temp_name = temp_name.replace(".xlsx", "_psuedo.xlsx")
